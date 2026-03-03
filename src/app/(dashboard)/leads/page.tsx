@@ -1,4 +1,5 @@
 import { Suspense } from 'react';
+import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
 import type { LeadStatus } from '@/types';
 import { TableSkeleton } from '@/components/Skeleton';
@@ -43,7 +44,7 @@ async function LeadsContent({ searchParams }: { searchParams: Promise<{ status?:
 }
 
 async function LeadsList({ status, q }: { status?: string; q?: string }) {
-  const supabase = createClient();
+  const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
   let query = supabase
@@ -61,7 +62,7 @@ async function LeadsList({ status, q }: { status?: string; q?: string }) {
     return (
       <div className="bg-white rounded-lg border divide-y">
         {leads.map((lead) => (
-          <a key={lead.id} href={`/leads/${lead.id}`}
+          <Link key={lead.id} href={`/leads/${lead.id}`}
             className="flex items-center justify-between px-4 py-4 hover:bg-gray-50">
             <div className="min-w-0">
               <p className="font-medium truncate">{lead.name}</p>
@@ -79,7 +80,7 @@ async function LeadsList({ status, q }: { status?: string; q?: string }) {
                 </span>
               )}
             </div>
-          </a>
+          </Link>
         ))}
       </div>
     );
@@ -88,9 +89,9 @@ async function LeadsList({ status, q }: { status?: string; q?: string }) {
   return (
     <div className="bg-white rounded-lg border p-8 text-center">
       <p className="text-gray-500 text-sm mb-4">No leads found.</p>
-      <a href="/leads/new" className="text-blue-600 hover:underline text-sm">
+      <Link href="/leads/new" className="text-blue-600 hover:underline text-sm">
         Create your first lead
-      </a>
+      </Link>
     </div>
   );
 }
@@ -100,10 +101,10 @@ export default function LeadsPage({ searchParams }: { searchParams: Promise<{ st
     <div className="max-w-4xl">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold">Leads</h1>
-        <a href="/leads/new"
+        <Link href="/leads/new"
           className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700">
           + New lead
-        </a>
+        </Link>
       </div>
 
       <Suspense fallback={<TableSkeleton />}>

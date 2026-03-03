@@ -1,7 +1,8 @@
 import { createClient } from '@/lib/supabase/server';
+import Link from 'next/link';
 
 export default async function DashboardPage() {
-  const supabase = createClient();
+  const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
   const [{ count: leadCount }, { count: quoteCount }, { data: recentLeads }] =
@@ -38,21 +39,21 @@ export default async function DashboardPage() {
       </div>
 
       <div className="flex gap-3 mb-8">
-        <a href="/leads/new"
+        <Link href="/leads/new"
           className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700">
           + New lead
-        </a>
-        <a href="/quotes/new"
+        </Link>
+        <Link href="/quotes/new"
           className="bg-white border px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-50">
           + New quote
-        </a>
+        </Link>
       </div>
 
       <h2 className="font-semibold text-gray-700 mb-3">Recent leads</h2>
       {recentLeads && recentLeads.length > 0 ? (
         <div className="bg-white rounded-lg border divide-y">
           {recentLeads.map((lead) => (
-            <a key={lead.id} href={`/leads/${lead.id}`}
+            <Link key={lead.id} href={`/leads/${lead.id}`}
               className="flex items-center justify-between px-4 py-3 hover:bg-gray-50">
               <div>
                 <p className="font-medium">{lead.name}</p>
@@ -63,11 +64,11 @@ export default async function DashboardPage() {
               <span className={`text-xs px-2 py-1 rounded-full font-medium ${statusColor[lead.status]}`}>
                 {lead.status}
               </span>
-            </a>
+            </Link>
           ))}
         </div>
       ) : (
-        <p className="text-gray-500 text-sm">No leads yet. <a href="/leads/new" className="text-blue-600 hover:underline">Add your first lead.</a></p>
+        <p className="text-gray-500 text-sm">No leads yet. <Link href="/leads/new" className="text-blue-600 hover:underline">Add your first lead.</Link></p>
       )}
     </div>
   );

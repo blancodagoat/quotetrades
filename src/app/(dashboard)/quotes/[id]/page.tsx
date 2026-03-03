@@ -1,4 +1,6 @@
 import { notFound } from 'next/navigation';
+import Link from 'next/link';
+import { ArrowLeft } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import QuoteActions from '@/components/QuoteActions';
 import CopyableQuoteLink from '@/components/CopyableQuoteLink';
@@ -13,14 +15,15 @@ const STATUS_COLORS: Record<QuoteStatus, string> = {
 
 function cents(n: number) { return `$${(n / 100).toFixed(2)}`; }
 
-export default async function QuoteDetailPage({ params }: { params: { id: string } }) {
-  const supabase = createClient();
+export default async function QuoteDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
   const { data: quote } = await supabase
     .from('quotes')
     .select('*, leads(name, phone, email), quote_items(*)')
-    .eq('id', params.id)
+    .eq('id', id)
     .eq('user_id', user!.id)
     .single();
 
@@ -36,7 +39,7 @@ export default async function QuoteDetailPage({ params }: { params: { id: string
   return (
     <div className="max-w-2xl">
       <div className="flex items-center gap-3 mb-2">
-        <a href="/quotes" className="text-gray-500 hover:text-gray-700 text-sm">← Quotes</a>
+        <Link href="/quotes" className="text-gray-500 hover:text-gray-700 text-sm"><ArrowLeft className="w-4 h-4 inline" /> Quotes</Link>
       </div>
 
       <div className="flex items-start justify-between mb-6">

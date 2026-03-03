@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { X } from 'lucide-react';
 import type { QuoteTemplate, QuoteTemplateItem } from '@/types';
 
 type Lead = { id: string; name: string };
@@ -156,7 +157,7 @@ export default function QuoteForm({ leads, templates, defaultLeadId }: Props) {
                 className="w-24 border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
               <button type="button" onClick={() => removeItem(idx)}
-                className="text-gray-400 hover:text-red-500 px-2 py-2 text-lg leading-none">×</button>
+                className="text-gray-400 hover:text-red-500 px-2 py-2"><X className="w-4 h-4" /></button>
             </div>
           ))}
         </div>

@@ -1,4 +1,6 @@
 import { createClient } from '@/lib/supabase/server';
+import Link from 'next/link';
+import { ArrowLeft } from 'lucide-react';
 import QuoteForm from '@/components/QuoteForm';
 
 export default async function NewQuotePage({
@@ -6,7 +8,7 @@ export default async function NewQuotePage({
 }: {
   searchParams: { lead_id?: string };
 }) {
-  const supabase = createClient();
+  const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
   const [{ data: leads }, { data: templates }] = await Promise.all([
@@ -17,7 +19,7 @@ export default async function NewQuotePage({
   return (
     <div className="max-w-2xl">
       <div className="flex items-center gap-3 mb-6">
-        <a href="/quotes" className="text-gray-500 hover:text-gray-700 text-sm">← Quotes</a>
+        <Link href="/quotes" className="text-gray-500 hover:text-gray-700 text-sm"><ArrowLeft className="w-4 h-4 inline" /> Quotes</Link>
         <h1 className="text-2xl font-bold">New quote</h1>
       </div>
       <div className="bg-white rounded-lg border p-6">

@@ -1,16 +1,20 @@
 import { notFound } from 'next/navigation';
+import { Check } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import AcceptQuoteButton from '@/components/AcceptQuoteButton';
 import type { QuoteItem } from '@/types';
 import { Metadata } from 'next';
 
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-  const supabase = createClient();
+function cents(n: number) { return `$${(n / 100).toFixed(2)}`; }
+
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  const supabase = await createClient();
 
   const { data: quote } = await supabase
     .from('quotes')
     .select('title, biz_name')
-    .eq('public_slug', params.slug)
+    .eq('public_slug', slug)
     .eq('status', 'sent')
     .single();
 
@@ -21,13 +25,14 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   };
 }
 
-export default async function PublicQuotePage({ params }: { params: { slug: string } }) {
-  const supabase = createClient();
+export default async function PublicQuotePage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const supabase = await createClient();
 
   const { data: quote } = await supabase
     .from('quotes')
     .select('*, quote_items(*)')
-    .eq('public_slug', params.slug)
+    .eq('public_slug', slug)
     .eq('status', 'sent')
     .single();
 
@@ -112,13 +117,13 @@ export default async function PublicQuotePage({ params }: { params: { slug: stri
           {/* Accept button */}
           {quote.status === 'sent' && (
             <div className="mt-6 border-t pt-6">
-              <AcceptQuoteButton quoteId={quote.id} slug={params.slug} />
+              <AcceptQuoteButton quoteId={quote.id} slug={slug} />
             </div>
           )}
 
           {quote.status === 'accepted' && (
             <div className="mt-6 border-t pt-6 text-center">
-              <p className="text-green-600 font-medium text-lg">✓ Quote accepted</p>
+              <p className="text-green-600 font-medium text-lg"><Check className="w-4 h-4 inline" /> Quote accepted</p>
               <p className="text-sm text-gray-500 mt-1">We&apos;ll be in touch shortly.</p>
             </div>
           )}

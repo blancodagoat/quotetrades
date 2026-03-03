@@ -1,8 +1,9 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 
-export async function POST(request: Request, { params }: { params: { id: string } }) {
-  const supabase = createClient();
+export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const supabase = await createClient();
   const body = await request.json().catch(() => ({}));
   const token: string | undefined = body?.token;
 
@@ -11,7 +12,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
   const { data: quote, error: qErr } = await supabase
     .from('quotes')
     .select('id, public_slug, status, lead_id')
-    .eq('id', params.id)
+    .eq('id', id)
     .single();
 
   if (qErr || !quote) return NextResponse.json({ error: 'Quote not found' }, { status: 404 });
@@ -28,7 +29,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
   const { data, error } = await supabase
     .from('quotes')
     .update({ status: 'accepted', updated_at: new Date().toISOString() })
-    .eq('id', params.id)
+    .eq('id', id)
     .select()
     .single();
 

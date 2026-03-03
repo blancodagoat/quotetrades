@@ -1,4 +1,6 @@
 import { notFound } from 'next/navigation';
+import Link from 'next/link';
+import { ArrowLeft } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import LeadForm from '@/components/LeadForm';
 import type { LeadStatus, QuoteStatus } from '@/types';
@@ -22,14 +24,15 @@ function cents(n: number) {
   return `$${(n / 100).toFixed(2)}`;
 }
 
-export default async function LeadDetailPage({ params }: { params: { id: string } }) {
-  const supabase = createClient();
+export default async function LeadDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
   const { data: lead } = await supabase
     .from('leads')
     .select('*, quotes(id, title, status, total_cents, created_at)')
-    .eq('id', params.id)
+    .eq('id', id)
     .eq('user_id', user!.id)
     .single();
 
@@ -40,7 +43,7 @@ export default async function LeadDetailPage({ params }: { params: { id: string 
   return (
     <div className="max-w-2xl">
       <div className="flex items-center gap-3 mb-6">
-        <a href="/leads" className="text-gray-500 hover:text-gray-700 text-sm">← Leads</a>
+        <Link href="/leads" className="text-gray-500 hover:text-gray-700 text-sm"><ArrowLeft className="w-4 h-4 inline" /> Leads</Link>
         <h1 className="text-2xl font-bold">{lead.name}</h1>
         <span className={`text-xs px-2 py-1 rounded-full font-medium ${STATUS_COLORS[lead.status as LeadStatus]}`}>
           {lead.status}
@@ -56,15 +59,15 @@ export default async function LeadDetailPage({ params }: { params: { id: string 
       <div className="bg-white rounded-lg border p-6">
         <div className="flex items-center justify-between mb-4">
           <h2 className="font-semibold">Quotes</h2>
-          <a href={`/quotes/new?lead_id=${lead.id}`}
+          <Link href={`/quotes/new?lead_id=${lead.id}`}
             className="text-sm text-blue-600 hover:underline">
             + Create quote
-          </a>
+          </Link>
         </div>
         {quotes.length > 0 ? (
           <div className="divide-y">
             {quotes.map((q) => (
-              <a key={q.id} href={`/quotes/${q.id}`}
+              <Link key={q.id} href={`/quotes/${q.id}`}
                 className="flex items-center justify-between py-3 hover:bg-gray-50 -mx-2 px-2 rounded">
                 <div>
                   <p className="font-medium text-sm">{q.title}</p>
@@ -78,7 +81,7 @@ export default async function LeadDetailPage({ params }: { params: { id: string 
                     {q.status}
                   </span>
                 </div>
-              </a>
+              </Link>
             ))}
           </div>
         ) : (

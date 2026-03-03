@@ -45,7 +45,7 @@ export default function QuoteActions({ quoteId, status, hasSlug }: Props) {
         {status === 'draft' && (
           <button onClick={send} disabled={loading === 'send'}
             className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 disabled:opacity-60 transition-colors">
-            {loading === 'send' ? 'Sending…' : 'Send quote (generate link)'}
+            {loading === 'send' ? 'Sending…' : 'Send quote'}
           </button>
         )}
 

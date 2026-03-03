@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { X } from 'lucide-react';
 import type { QuoteTemplate, QuoteTemplateItem } from '@/types';
 
 type TemplateWithItems = QuoteTemplate & { quote_template_items: QuoteTemplateItem[] };
@@ -98,7 +99,7 @@ export default function TemplateList({ templates }: { templates: TemplateWithIte
                     onChange={(e) => setItem(idx, 'unit_price', e.target.value)}
                     className="w-24 border rounded-lg px-3 py-2 text-sm" />
                   <button type="button" onClick={() => setNewItems((p) => p.filter((_, i) => i !== idx))}
-                    className="text-gray-400 hover:text-red-500 px-2">×</button>
+                    className="text-gray-400 hover:text-red-500 px-2"><X className="w-4 h-4" /></button>
                 </div>
               ))}
             </div>

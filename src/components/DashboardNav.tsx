@@ -1,8 +1,9 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
-import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { createClient } from '@/lib/supabase/client';
 
 const links = [
   { href: '/dashboard',  label: 'Dashboard' },
@@ -32,7 +33,7 @@ export default function DashboardNav() {
         {links.map(({ href, label }) => {
           const active = pathname === href || (href !== '/dashboard' && pathname.startsWith(href));
           return (
-            <a
+            <Link
               key={href}
               href={href}
               className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
@@ -42,7 +43,7 @@ export default function DashboardNav() {
               }`}
             >
               {label}
-            </a>
+            </Link>
           );
         })}
       </div>

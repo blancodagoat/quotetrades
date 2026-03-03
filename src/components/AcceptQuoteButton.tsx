@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { Check } from 'lucide-react';
 
 type Props = { quoteId: string; slug: string };
 
@@ -29,7 +30,7 @@ export default function AcceptQuoteButton({ quoteId, slug }: Props) {
   if (accepted) {
     return (
       <div className="text-center">
-        <p className="text-green-600 font-medium text-lg">✓ Quote accepted!</p>
+        <p className="text-green-600 font-medium text-lg"><Check className="w-4 h-4 inline" /> Quote accepted!</p>
         <p className="text-sm text-gray-500 mt-1">Thank you. We&apos;ll be in touch shortly.</p>
       </div>
     );

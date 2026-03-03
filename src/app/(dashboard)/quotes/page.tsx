@@ -1,4 +1,5 @@
 import { Suspense } from 'react';
+import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
 import type { QuoteStatus } from '@/types';
 import { TableSkeleton } from '@/components/Skeleton';
@@ -38,7 +39,7 @@ async function QuotesContent({ searchParams }: { searchParams: Promise<{ status?
 }
 
 async function QuotesList({ status }: { status?: string }) {
-  const supabase = createClient();
+  const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
   let query = supabase
@@ -57,7 +58,7 @@ async function QuotesList({ status }: { status?: string }) {
         {quotes.map((q) => {
           const lead = q.leads as { name: string } | null;
           return (
-            <a key={q.id} href={`/quotes/${q.id}`}
+            <Link key={q.id} href={`/quotes/${q.id}`}
               className="flex items-center justify-between px-4 py-4 hover:bg-gray-50">
               <div className="min-w-0">
                 <p className="font-medium truncate">{q.title}</p>
@@ -69,7 +70,7 @@ async function QuotesList({ status }: { status?: string }) {
                   {q.status}
                 </span>
               </div>
-            </a>
+            </Link>
           );
         })}
       </div>
@@ -79,9 +80,9 @@ async function QuotesList({ status }: { status?: string }) {
   return (
     <div className="bg-white rounded-lg border p-8 text-center">
       <p className="text-gray-500 text-sm mb-4">No quotes yet.</p>
-      <a href="/quotes/new" className="text-blue-600 hover:underline text-sm">
+      <Link href="/quotes/new" className="text-blue-600 hover:underline text-sm">
         Create your first quote
-      </a>
+      </Link>
     </div>
   );
 }
@@ -91,10 +92,10 @@ export default function QuotesPage({ searchParams }: { searchParams: Promise<{ s
     <div className="max-w-4xl">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold">Quotes</h1>
-        <a href="/quotes/new"
+        <Link href="/quotes/new"
           className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700">
           + New quote
-        </a>
+        </Link>
       </div>
 
       <Suspense fallback={<TableSkeleton />}>
