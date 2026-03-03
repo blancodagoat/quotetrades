@@ -21,7 +21,12 @@ export async function POST(request: Request) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-  const body = await request.json();
+  let body;
+  try {
+    body = await request.json();
+  } catch {
+    return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
+  }
   const { name, items } = body;
   if (!name) return NextResponse.json({ error: 'name is required' }, { status: 400 });
 
@@ -36,7 +41,7 @@ export async function POST(request: Request) {
   const lineItems: { description: string; quantity: number; unit_price_cents: number }[] =
     items || [];
   if (lineItems.length > 0) {
-    await supabase.from('quote_template_items').insert(
+    const { error: itemsError } = await supabase.from('quote_template_items').insert(
       lineItems.map((item, idx) => ({
         template_id: tmpl.id,
         description: item.description,
@@ -45,6 +50,7 @@ export async function POST(request: Request) {
         sort_order: idx,
       })),
     );
+    if (itemsError) return NextResponse.json({ error: itemsError.message }, { status: 500 });
   }
 
   return NextResponse.json(tmpl, { status: 201 });

@@ -11,14 +11,15 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
 
   const { data: quote, error: qErr } = await supabase
     .from('quotes')
-    .select('id, public_slug, status, lead_id')
+    .select('id, public_slug, status, lead_id, user_id')
     .eq('id', id)
     .single();
 
   if (qErr || !quote) return NextResponse.json({ error: 'Quote not found' }, { status: 404 });
 
+  const isPublic = !!token;
   const isValidToken = token === quote.public_slug;
-  const canAccept = (user) || (token && isValidToken);
+  const canAccept = (isPublic && isValidToken) || (!isPublic && user && quote.user_id === user.id);
 
   if (!canAccept) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
@@ -36,11 +37,12 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
   // Update lead status to 'accepted' if quote accepted
-  if (data?.lead_id && (user || token)) {
-    await supabase
+  if (data?.lead_id) {
+    const { error: leadError } = await supabase
       .from('leads')
       .update({ status: 'accepted', updated_at: new Date().toISOString() })
       .eq('id', data.lead_id);
+    if (leadError) console.error('Failed to update lead status:', leadError.message);
   }
 
   return NextResponse.json(data);

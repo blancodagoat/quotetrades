@@ -26,7 +26,12 @@ export async function PATCH(request: Request, { params }: Params) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-  const body = await request.json();
+  let body;
+  try {
+    body = await request.json();
+  } catch {
+    return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
+  }
   const { title, valid_until, notes, items, status } = body;
 
   const update: Record<string, unknown> = { updated_at: new Date().toISOString() };
@@ -43,9 +48,10 @@ export async function PATCH(request: Request, { params }: Params) {
     );
 
     // Replace all items
-    await supabase.from('quote_items').delete().eq('quote_id', id);
+    const { error: deleteError } = await supabase.from('quote_items').delete().eq('quote_id', id);
+    if (deleteError) return NextResponse.json({ error: 'Failed to remove existing line items' }, { status: 500 });
     if (lineItems.length > 0) {
-      await supabase.from('quote_items').insert(
+      const { error: insertError } = await supabase.from('quote_items').insert(
         lineItems.map((item, idx) => ({
           quote_id: id,
           description: item.description,
@@ -54,6 +60,7 @@ export async function PATCH(request: Request, { params }: Params) {
           sort_order: idx,
         })),
       );
+      if (insertError) return NextResponse.json({ error: 'Failed to update line items' }, { status: 500 });
     }
   }
 

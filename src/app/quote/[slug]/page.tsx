@@ -1,5 +1,4 @@
 import { notFound } from 'next/navigation';
-import { Check } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import AcceptQuoteButton from '@/components/AcceptQuoteButton';
 import type { QuoteItem } from '@/types';
@@ -118,13 +117,6 @@ export default async function PublicQuotePage({ params }: { params: Promise<{ sl
           {quote.status === 'sent' && (
             <div className="mt-6 border-t pt-6">
               <AcceptQuoteButton quoteId={quote.id} slug={slug} />
-            </div>
-          )}
-
-          {quote.status === 'accepted' && (
-            <div className="mt-6 border-t pt-6 text-center">
-              <p className="text-green-600 font-medium text-lg"><Check className="w-4 h-4 inline" /> Quote accepted</p>
-              <p className="text-sm text-gray-500 mt-1">We&apos;ll be in touch shortly.</p>
             </div>
           )}
         </div>

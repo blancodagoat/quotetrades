@@ -9,7 +9,12 @@ export async function PATCH(request: Request, { params }: Params) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-  const body = await request.json();
+  let body;
+  try {
+    body = await request.json();
+  } catch {
+    return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
+  }
   const { name, items } = body;
   const update: Record<string, unknown> = { updated_at: new Date().toISOString() };
   if (name !== undefined) update.name = name;
@@ -25,10 +30,11 @@ export async function PATCH(request: Request, { params }: Params) {
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
   if (items !== undefined) {
-    await supabase.from('quote_template_items').delete().eq('template_id', id);
+    const { error: deleteError } = await supabase.from('quote_template_items').delete().eq('template_id', id);
+    if (deleteError) return NextResponse.json({ error: 'Failed to remove existing template items' }, { status: 500 });
     const lineItems: { description: string; quantity: number; unit_price_cents: number }[] = items;
     if (lineItems.length > 0) {
-      await supabase.from('quote_template_items').insert(
+      const { error: insertError } = await supabase.from('quote_template_items').insert(
         lineItems.map((item, idx) => ({
           template_id: id,
           description: item.description,
@@ -37,6 +43,7 @@ export async function PATCH(request: Request, { params }: Params) {
           sort_order: idx,
         })),
       );
+      if (insertError) return NextResponse.json({ error: 'Failed to update template items' }, { status: 500 });
     }
   }
 
