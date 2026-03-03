@@ -50,7 +50,9 @@ async function QuotesList({ status }: { status?: string }) {
 
   if (status) query = query.eq('status', status);
 
-  const { data: quotes } = await query;
+  const { data: quotes, error: queryError } = await query;
+
+  if (queryError) return <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-sm text-red-700">Failed to load quotes.</div>;
 
   if (quotes && quotes.length > 0) {
     return (
