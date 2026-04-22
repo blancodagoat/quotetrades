@@ -83,7 +83,7 @@ This creates:
 ## 6. Authentication
 
 - **Email/password** — via `/signup` and `/login`.
-- **Session handling** — `@supabase/ssr` manages server-side sessions; the middleware refreshes the session on each request.
+- **Session handling** — `@supabase/ssr` manages server-side sessions; the proxy refreshes the session on each request.
 - **Protected routes** — all `/dashboard` routes redirect to `/login` if unauthenticated (enforced in `src/app/(dashboard)/layout.tsx`).
 
 ### Supabase Auth settings
@@ -115,11 +115,11 @@ src/
       profile/             # GET, PUT (upsert)
   components/              # Client components (forms, actions, nav)
   lib/
-    supabase/              # client.ts, server.ts, middleware.ts
+    supabase/              # client.ts, server.ts, proxy.ts
     slug.ts                # 12-char random slug generator
     pdf.tsx                # @react-pdf/renderer QuotePDF document component
   types/index.ts
-  middleware.ts
+  proxy.ts
 supabase/schema.sql
 ```
 
@@ -219,7 +219,7 @@ Fix any TypeScript errors before deploying.
 
 ### 10.2 Vercel
 
-The app is a standard Next.js 14 application. Deploy to Vercel with the following:
+The app is a standard Next.js 16 application. Deploy to Vercel with the following:
 
 1. Set all required env vars in the Vercel project settings.
 2. Set Supabase **Site URL** and **Redirect URLs** to your production domain.
@@ -227,7 +227,7 @@ The app is a standard Next.js 14 application. Deploy to Vercel with the followin
 
 ### 10.3 Other hosts
 
-Any Node.js host that supports Next.js 14 works (Railway, Render, VPS). Node.js 18+ required.
+Any Node.js host that supports Next.js 16 works (Railway, Render, VPS). Node.js 18+ required.
 
 ---
 
@@ -237,7 +237,7 @@ Any Node.js host that supports Next.js 14 works (Railway, Render, VPS). Node.js 
 
 **Public quote page shows 404** — The quote must have a `public_slug`. Click "Send quote" in the dashboard to generate one.
 
-**PDF download fails** — Ensure the quote belongs to the authenticated user. Check server logs for `@react-pdf/renderer` errors. The PDF route requires the Node.js runtime (default for API routes in Next.js 14).
+**PDF download fails** — Ensure the quote belongs to the authenticated user. Check server logs for `@react-pdf/renderer` errors. The PDF route requires the Node.js runtime (default for API routes in Next.js 16).
 
 **Client "Accept" fails** — The `token` in the request body must exactly match the quote's `public_slug`. Ensure the public quote page is sending the slug from the URL correctly.
 

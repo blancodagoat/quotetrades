@@ -39,7 +39,7 @@ Full setup and API reference in **[docs/DOCUMENTATION.md](docs/DOCUMENTATION.md)
 
 ## Stack
 
-- Next.js 14 (App Router), TypeScript, Tailwind CSS
+- Next.js 16 (App Router), TypeScript, Tailwind CSS
 - Supabase (PostgreSQL, Auth)
 - @react-pdf/renderer (pure JS PDF — serverless-safe, no Puppeteer)
 

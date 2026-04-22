@@ -9,8 +9,8 @@ const sora = Sora({
 });
 
 export const metadata: Metadata = {
-  title: 'Lead to Quote',
-  description: 'Simple lead-to-quote for trades',
+  title: 'quotetrades — quotes for local trades',
+  description: 'Lead to quote in minutes. Built for HVAC, electrical, plumbing, landscaping, and roofing.',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
